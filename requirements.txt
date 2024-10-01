@@ -4,13 +4,10 @@ charset-normalizer==3.3.2
 gitdb==4.0.11
 GitPython==3.1.43
 idna==3.10
-multidict==6.1.0
 plyer==2.1.0
-PyJWT==2.9.0
 requests==2.32.3
 schedule==1.2.2
 smmap==5.0.1
 soupsieve==2.6
-twilio==9.3.2
 urllib3==2.2.3
 yarl==1.13.1
