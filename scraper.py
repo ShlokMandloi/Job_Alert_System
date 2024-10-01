@@ -33,6 +33,7 @@ def scrape_jobs():
     update_jobs_in_database(jobs)
 
 
+
 def send_pushover_notification(job_details):
     message = (
         f"New Job Alert!\n\n"
