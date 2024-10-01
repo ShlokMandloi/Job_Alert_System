@@ -122,28 +122,38 @@ def update_jobs_in_database(jobs):
     
     for job in jobs:
         try:
+            # Normalize the data to prevent case and whitespace issues
+            role = job['Role'].strip().lower() if job['Role'] else None
+            company = job['Company'].strip().lower() if job['Company'] else None
+            location = job['Location'].strip().lower() if job['Location'] else None
+            application_link = job['Application Link'].strip().lower() if job['Application Link'] else None
+            date_posted = job['Date Posted'].strip() if job['Date Posted'] else None
+            
             # Check if the job is already in the database based on all fields except 'id'
             cursor.execute('''SELECT 1 FROM jobs 
-                              WHERE role = ? 
-                              AND company = ? 
-                              AND location = ? 
-                              AND (application_link = ? OR application_link IS NULL)
+                              WHERE LOWER(role) = ? 
+                              AND LOWER(company) = ? 
+                              AND LOWER(location) = ? 
+                              AND (LOWER(application_link) = ? OR application_link IS NULL OR ? IS NULL)
                               AND date_posted = ?''', 
-                           (job['Role'], job['Company'], job['Location'], job['Application Link'], job['Date Posted']))
+                           (role, company, location, application_link, application_link, date_posted))
+            
             existing_job = cursor.fetchone()
             
-            # If job is not in the database, insert it and send notifications
+            # If the job is not in the database, insert it and send notifications
             if not existing_job:
                 insert_job(job)
                 send_alert(job)  # Send an alert notification for the newly added job
                 print(f"Added new job: {job['Role']} at {job['Company']}")
 
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError as e:
+            print(f"Error occurred: {e}")
             continue  # Continue if there's any issue, ensuring the loop doesn't stop
     
     # Commit the changes and close the connection
     conn.commit()
     conn.close()
+
 
 
 
