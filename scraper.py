@@ -7,6 +7,8 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 import requests
 import schedule
 import time
+from repo_manager import update_repository
+
 
 # Initialize the SNS client
 sns_client = boto3.client('sns', region_name='us-east-1')  # Replace 'us-east-1' with your AWS region if different
@@ -22,6 +24,14 @@ PUSHOVER_USER_KEY = 'u6qzd7qapzyv3wo79xvp3j2sarzp4z'    # Replace with your Push
 # Define the path to the locally cloned repo
 REPO_PATH = r"C:\Users\Shlok Mandloi\Desktop\Shlok\Shlok - USA\Projects\Job Alert System\repo_clone"  # Update this path to your local cloned repo
 README_PATH = os.path.join(REPO_PATH, "README.md")
+
+
+def scrape_jobs():
+    update_repository()  # Update the repo before scraping
+    readme_content = read_readme_file()
+    jobs = parse_jobs_from_readme(readme_content)
+    update_jobs_in_database(jobs)
+
 
 def send_pushover_notification(job_details):
     message = (
