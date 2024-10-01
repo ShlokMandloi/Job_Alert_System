@@ -1,9 +1,12 @@
 import sqlite3
-
+import os
 # Establish a connection to the SQLite database
 def create_connection():
-    conn = sqlite3.connect(r'C:\Users\Shlok Mandloi\Desktop\Shlok\Shlok - USA\Projects\Job Alert System\jobs.db')
+    # Use the current working directory to set the path to the jobs.db file
+    db_path = os.path.join(os.getcwd(), 'jobs.db')
+    conn = sqlite3.connect(db_path)
     return conn
+
 
 # Function to create the required tables
 # Function to create the required tables

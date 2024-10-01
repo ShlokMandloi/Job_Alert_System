@@ -1,9 +1,12 @@
 from git import Repo
 import os
 
-# Repository URL and local path
+ #Repository URL
 REPO_URL = 'https://github.com/SimplifyJobs/New-Grad-Positions.git'
-LOCAL_PATH = r"C:\Users\Shlok Mandloi\Desktop\Shlok\Shlok - USA\Projects\Job Alert System\repo_clone"  # Directory where the repository will be cloned
+
+# Use the current working directory to set the LOCAL_PATH
+LOCAL_PATH = os.path.join(os.getcwd(), 'repo_clone')
+# Directory where the repository will be cloned
 
 # Clone the repository if it doesn't exist locally
 def clone_repository():

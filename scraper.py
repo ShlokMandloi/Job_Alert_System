@@ -21,9 +21,11 @@ from database import insert_job, create_connection
 PUSHOVER_API_TOKEN = 'awh6z1jzk5dsz7qetm2pbayycvcf36'  # Replace with your Pushover API Token
 PUSHOVER_USER_KEY = 'u6qzd7qapzyv3wo79xvp3j2sarzp4z'    # Replace with your Pushover User Key
 
+
 # Define the path to the locally cloned repo
-REPO_PATH = r"C:\Users\Shlok Mandloi\Desktop\Shlok\Shlok - USA\Projects\Job Alert System\repo_clone"  # Update this path to your local cloned repo
+REPO_PATH = os.path.join(os.getcwd(), 'repo_clone')
 README_PATH = os.path.join(REPO_PATH, "README.md")
+
 
 def send_pushover_notification(job_details):
     message = (
@@ -120,12 +122,14 @@ def update_jobs_in_database(jobs):
     
     for job in jobs:
         try:
-            # Check if the job is already in the database based on all fields
-            cursor.execute(
-                """SELECT 1 FROM jobs 
-                   WHERE role = ? AND company = ? AND location = ? AND date_posted = ?""",
-                (job['Role'], job['Company'], job['Location'], job['Date Posted'])
-            )
+            # Check if the job is already in the database based on all fields except 'id'
+            cursor.execute('''SELECT 1 FROM jobs 
+                              WHERE role = ? 
+                              AND company = ? 
+                              AND location = ? 
+                              AND (application_link = ? OR application_link IS NULL)
+                              AND date_posted = ?''', 
+                           (job['Role'], job['Company'], job['Location'], job['Application Link'], job['Date Posted']))
             existing_job = cursor.fetchone()
             
             # If job is not in the database, insert it and send notifications
@@ -137,8 +141,10 @@ def update_jobs_in_database(jobs):
         except sqlite3.IntegrityError:
             continue  # Continue if there's any issue, ensuring the loop doesn't stop
     
+    # Commit the changes and close the connection
     conn.commit()
     conn.close()
+
 
 
 def scrape_jobs():
